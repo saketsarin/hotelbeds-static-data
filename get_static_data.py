@@ -68,7 +68,19 @@ def fetch_data(endpoint, params=None):
     return response.json()
 
 def insert_data_chunk(chunk, table_name):
-    df = pd.DataFrame([{k: json.dumps(v) if isinstance(v, (dict, list)) else v for k, v in item.items()} for item in chunk])
+    def convert_value(value):
+        if isinstance(value, (dict, list)):
+            return json.dumps(value)
+        elif isinstance(value, bool):
+            return value
+        elif isinstance(value, (int, float, str)):
+            return value
+        elif isinstance(value, datetime):
+            return value.isoformat()
+        else:
+            return str(value)
+
+    df = pd.DataFrame([{k: convert_value(v) for k, v in item.items()} for item in chunk])
     df = df.dropna(axis=1, how='all')
     df.columns = [col.lower().replace(' ', '_') for col in df.columns]
     
@@ -81,7 +93,18 @@ def insert_data_chunk(chunk, table_name):
     missing_columns = set(df.columns) - existing_columns
     with engine.connect() as connection:
         for col in missing_columns:
-            connection.execute(text(f'ALTER TABLE {table_name} ADD COLUMN {col} TEXT'))
+            sample_value = df[col].dropna().iloc[0]
+            if isinstance(sample_value, bool):
+                col_type = 'BOOLEAN'
+            elif isinstance(sample_value, int):
+                col_type = 'INTEGER'
+            elif isinstance(sample_value, float):
+                col_type = 'FLOAT'
+            elif isinstance(sample_value, datetime):
+                col_type = 'TIMESTAMP'
+            else:
+                col_type = 'TEXT'
+            connection.execute(text(f'ALTER TABLE {table_name} ADD COLUMN {col} {col_type}'))
     
     metadata = MetaData()
     table = Table(table_name, metadata, autoload_with=engine)
