@@ -123,3 +123,12 @@ The script creates and updates the following tables in the database:
 - hotelbeds_hotels
 
 Additionally, it maintains a `hotelbeds_last_updated_time` table to track the last update time for each entity type.
+
+<!-- run server with gunicorn -->
+1. tmux attach -t flask_app
+2. gunicorn --workers 4 --worker-class gevent --worker-connections 1000 --bind 5.78.114.187:5000 --log-level debug app:app
+3. Ctrl+b, d
+
+<!-- check cron job and monitor logs -->
+1. crontab -l
+2. cat /root/hotelbeds-static-data/cron.log
