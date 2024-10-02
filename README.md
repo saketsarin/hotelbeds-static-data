@@ -21,6 +21,7 @@ This Python script is designed to fetch and update static data from the Hotelbed
 ## Installation
 
 1. Install PostgreSQL:
+
    - For Ubuntu:
      ```
      sudo apt update
@@ -33,6 +34,7 @@ This Python script is designed to fetch and update static data from the Hotelbed
    - For Windows, download and install from the [official PostgreSQL website](https://www.postgresql.org/download/windows/).
 
 2. Start the PostgreSQL service:
+
    - For Ubuntu:
      ```
      sudo systemctl start postgresql
@@ -45,6 +47,7 @@ This Python script is designed to fetch and update static data from the Hotelbed
    - For Windows, the service should start automatically after installation.
 
 3. Create a new PostgreSQL database:
+
    ```
    sudo -u postgres psql
    CREATE DATABASE <your-database-name>;
@@ -54,11 +57,13 @@ This Python script is designed to fetch and update static data from the Hotelbed
 4. Clone the repository or download the script.
 
 5. Create a virtual environment:
+
    ```
    python3 -m venv venv
    ```
 
 6. Activate the virtual environment:
+
    ```
    source venv/bin/activate
    ```
@@ -75,7 +80,7 @@ This Python script is designed to fetch and update static data from the Hotelbed
    ```
    API_KEY=your_api_key
    SECRET=your_secret
-   
+
    DB_URL=postgresql://username:password@host:port/<your-database-name>
    ```
 
@@ -90,6 +95,7 @@ python get_static_data.py
 ```
 
 The script will:
+
 1. Connect to the Hotelbeds API
 2. Fetch data from various endpoints
 3. Store or update the data in the PostgreSQL database
@@ -125,10 +131,14 @@ The script creates and updates the following tables in the database:
 Additionally, it maintains a `hotelbeds_last_updated_time` table to track the last update time for each entity type.
 
 <!-- run server with gunicorn -->
+
 1. tmux attach -t flask_app
 2. gunicorn --workers 4 --worker-class gevent --worker-connections 1000 --bind 5.78.114.187:5000 --log-level debug app:app
 3. Ctrl+b, d
 
 <!-- check cron job and monitor logs -->
+
 1. crontab -l
 2. cat /root/hotelbeds-static-data/cron.log
+<!-- to edit cronfile -->
+3. crontab -e
